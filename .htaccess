@@ -1,0 +1,52 @@
+
+# Устанавливаем срок жизни сессии на сервере (в секундах)
+php_value session.gc_maxlifetime 1440
+
+# Устанавливаем срок жизни cookies сессии в браузере (в секундах)
+php_value session.cookie_lifetime 0
+
+# Разрешить использование .htaccess в директории
+Options +FollowSymLinks
+RewriteEngine On
+
+# Установить директорию по умолчанию для файлов
+DirectoryIndex index.php index.html
+
+# Удалить расширение PHP из URL
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# Отключить перелистывание каталогов
+Options -Indexes
+
+# Установить правильные заголовки для кэширования
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType text/html "access plus 1 day"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# Обеспечение безопасности файлов
+<FilesMatch "\.(htaccess|htpasswd|ini|phps|fla|psd|log)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Защита от XSS атак, добавляя специальный заголовок
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</IfModule>
